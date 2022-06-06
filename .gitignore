@@ -1,8 +1,4 @@
 #忽略编译生成的文件
 
-/.settings/
-.cproject
-.project
-/Firmware/For_V2.0.0_PCB/InkScreen2_13/MDK-ARM/
-/Firmware/For_V2.0.0_PCB/InkScreen2_13/Drivers/
-/.vscode/
+/Firmware/For_V2.1.0_PCB/InkScreen2_13/MDK-ARM/
+/Firmware/For_V2.1.0_PCB/InkScreen2_13/Drivers/
