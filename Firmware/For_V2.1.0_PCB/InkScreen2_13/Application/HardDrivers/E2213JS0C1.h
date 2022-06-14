@@ -3,6 +3,9 @@
 
 #include "main.h"
 
+/* 是否有外部SPI flash硬件存在 */
+#define EXTERNAL_SPI_FLASH_CONFIG       (ENABLE)
+
 /*引脚定义*************************************************************************/
 /* SPI号 */
 #define E2213JS0C1_SPI					(SPI1)
@@ -38,6 +41,14 @@ enum ENUM_FILL
     HOLLOW
 };
 /*屏幕参数*************************************************************************/
+//typedef struct
+//{
+//    uint8_t Orientation;    /* 显示方向 */
+//	uint8_t Wide;           /* 宽度（pix） */
+//	uint8_t High;           /* 高度（pix） */
+//    uint8_t XPosMax;        /* X轴最大值 */
+//    uint8_t YPosMax;        /* Y轴最大值 */
+//} E2213JS0C1_InfoTypedef;
 /* X轴坐标0~103；Y轴坐标0~211 */
 #define E2213JS0C1_W 104
 #define E2213JS0C1_H 212
@@ -109,11 +120,9 @@ enum ENUM_COLOR
 /* 指定的某一位数置为指定的0或1 */
 #define WriteBit(data, position, flag)   (flag ? SetBit(data, position) : ClearBit(data, position))
 /*函数*******************************************************************************/
-void E2213JS0C1_Init(void);
-void E2213JS0C1_SendImageData(void);
+void E2213JS0C1_Init(uint8_t Orientation);
 void E2213JS0C1_ClearFullScreen(enum ENUM_COLOR color);
-void E2213JS0C1_SendUpdateCmd(void);
-void E2213JS0C1_TurnOffDCDC(void);
+void E2213JS0C1_FlashScreen(void);
 void E2213JS0C1_DrawPoint(uint8_t xPos, uint8_t yPos, enum ENUM_COLOR color);
 void E2213JS0C1_DrawLine(uint8_t xStart, uint8_t yStart, uint8_t length, 
     enum ENUM_ORIENTATION orientation, enum ENUM_COLOR color);

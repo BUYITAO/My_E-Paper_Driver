@@ -11,9 +11,9 @@ static void E2213JS0C1_WriteData8(uint8_t data);
 static void E2213JS0C1_WriteMultipleData(uint8_t *pData, uint32_t Size);
 static void E2213JS0C1_WaiteUntilNotBusy(void);
 
+//E2213JS0C1_InfoTypedef E2213JS0C1_Info;
 uint8_t E2213JS0C1_FirstFrameBuffer[E2213JS0C1_BUFFER_SIZE];
 uint8_t E2213JS0C1_SecondFrameBuffer[E2213JS0C1_BUFFER_SIZE];
-
 
 /**
  * @brief	SPI收/发数据
@@ -119,11 +119,29 @@ static void E2213JS0C1_WriteMultipleData(uint8_t *pData, uint32_t Size)
 
 /**
  * @brief	初始化
- * @param	none
+* @param	Orientation:屏幕显示方向，0、1、2、3
  * @retval	none
  */
-void E2213JS0C1_Init(void)
+void E2213JS0C1_Init(uint8_t Orientation)
 {
+//    /* 初始化屏幕方向， */
+//    E2213JS0C1_Info.Orientation = Orientation;
+//    switch(E2213JS0C1_Info.Orientation)
+//    {
+//        case 0:
+//            E2213JS0C1_Info.Wide = E2213JS0C1_W;
+//            E2213JS0C1_Info.High = E2213JS0C1_H;
+//            E2213JS0C1_Info.XPosMax = E2213JS0C1_XPOS_MAX;
+//            E2213JS0C1_Info.YPosMax = E2213JS0C1_YPOS_MAX;
+//            break;
+//        case 1:
+//            break;
+//        case 2:
+//            break;
+//        case 3:
+//            break;
+//    }
+    
     /* 开启SPI */
     LL_SPI_Enable(E2213JS0C1_SPI); 
     
@@ -155,7 +173,7 @@ void E2213JS0C1_Init(void)
  * @param	none
  * @retval	none
  */
-void E2213JS0C1_SendImageData(void)
+static void E2213JS0C1_SendImageData(void)
 {
     /* 发送第一个Frame的数据 */
     E2213JS0C1_WriteRegIndex(FIRST_FRAME_CMD); 
@@ -170,7 +188,7 @@ void E2213JS0C1_SendImageData(void)
  * @param	none
  * @retval	none
  */
-void E2213JS0C1_SendUpdateCmd(void)
+static void E2213JS0C1_SendUpdateCmd(void)
 {
     /* 等待BUSY变成高电平 */
     E2213JS0C1_WaiteUntilNotBusy();
@@ -189,7 +207,7 @@ void E2213JS0C1_SendUpdateCmd(void)
  * @param	none
  * @retval	none
  */
-void E2213JS0C1_TurnOffDCDC(void)
+static void E2213JS0C1_TurnOffDCDC(void)
 {
     /* 关闭DC/DC命令 */
     E2213JS0C1_WriteRegIndex(TURN_OFF_DCDC_CMD);
@@ -198,6 +216,17 @@ void E2213JS0C1_TurnOffDCDC(void)
     /* 按技术手册，后续要把CS、MOSI、CLK都置0，切断CVV供电，但是我忽略这一步 */
 }
 
+/**
+ * @brief	刷新屏幕
+ * @param	none
+ * @retval	none
+ */
+void E2213JS0C1_FlashScreen(void)
+{
+    E2213JS0C1_SendImageData();
+    E2213JS0C1_SendUpdateCmd();
+    E2213JS0C1_TurnOffDCDC();
+}
 
 /**
  * @brief	清除整个屏幕

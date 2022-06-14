@@ -24,6 +24,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "E2213JS0C1.h"
+#include "spiFlash.h"
 #include "image.h"
 
 /* USER CODE END Includes */
@@ -88,30 +89,59 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_SPI1_Init();
+  MX_SPI2_Init();
   /* USER CODE BEGIN 2 */
-    E2213JS0C1_Init();
-    /* 显示图片测试 */
-    E2213JS0C1_DrawImage(0,0,104,212,gImage_1);
-    E2213JS0C1_SendImageData();
-    E2213JS0C1_SendUpdateCmd();
-    E2213JS0C1_TurnOffDCDC();
-    HAL_Delay(3000);
-    /* 显示点、线、矩形、字符、bpm图片测试 */
-    E2213JS0C1_ClearFullScreen(WHITE);
-    E2213JS0C1_DrawPoint(0,0,RED);
-    E2213JS0C1_DrawLine(0,2,10,HORIZONTAL,BLACK);
-    E2213JS0C1_DrawLine(0,4,10,VERTICAL,BLACK);    
-    E2213JS0C1_DrawRectangle(0,16,10,10,SOLID,BLACK,RED);   
-    E2213JS0C1_DrawRectangle(20,16,10,10,HOLLOW,BLACK,RED);          
-    E2213JS0C1_ShowCharStr(0,30,"FONT TEST",FONT_1608,BLACK,WHITE);
-    E2213JS0C1_DrawBmp(0,50,104,41,BLACK,WHITE,BmpImage);
-    E2213JS0C1_ShowCharStr(0,100,"UID:112222162",FONT_1608,BLACK,WHITE);  
-    E2213JS0C1_ShowCharStr(20,116,"Designed",FONT_1608,BLACK,WHITE);
-    E2213JS0C1_ShowCharStr(44,132,"By",FONT_1608,BLACK,WHITE);
-    E2213JS0C1_ShowCharStr(40,148,"BYT",FONT_1608,BLACK,WHITE);
-    E2213JS0C1_SendImageData();
-    E2213JS0C1_SendUpdateCmd();
-    E2213JS0C1_TurnOffDCDC();
+  /* 初始化墨水屏 */
+  E2213JS0C1_Init(0);
+//  /* 显示图片测试 */
+//  E2213JS0C1_DrawImage(0,0,104,212,gImage_1);  
+//  E2213JS0C1_FlashScreen();
+//  HAL_Delay(3000);
+//  /* 显示点、线、矩形、ASCII字符、bpm图片测试 */
+//  E2213JS0C1_ClearFullScreen(WHITE);
+//  E2213JS0C1_DrawPoint(0,0,RED);
+//  E2213JS0C1_DrawLine(0,2,10,HORIZONTAL,BLACK);
+//  E2213JS0C1_DrawLine(0,4,10,VERTICAL,BLACK);    
+//  E2213JS0C1_DrawRectangle(0,16,10,10,SOLID,BLACK,RED);   
+//  E2213JS0C1_DrawRectangle(20,16,10,10,HOLLOW,BLACK,RED);          
+//  E2213JS0C1_ShowCharStr(0,30,"FONT TEST",FONT_1608,BLACK,WHITE);
+//  E2213JS0C1_DrawBmp(0,50,104,41,BLACK,WHITE,BmpImage);
+//  E2213JS0C1_ShowCharStr(0,100,"UID:112222162",FONT_1608,BLACK,WHITE);  
+//  E2213JS0C1_ShowCharStr(20,116,"Designed",FONT_1608,BLACK,WHITE);
+//  E2213JS0C1_ShowCharStr(44,132,"By",FONT_1608,BLACK,WHITE);
+//  E2213JS0C1_ShowCharStr(40,148,"BYT",FONT_1608,BLACK,WHITE);
+//  E2213JS0C1_FlashScreen();  
+#if EXTERNAL_SPI_FLASH_CONFIG == ENABLE
+  /* 初始化Flash */
+  SPI_FLASH_Init();
+  /* 读取Flash ID，用于确认Flash是否存在，如果检测不到Flash就会卡死不显示 */
+  uint32_t id = SPI_FLASH_ReadID();
+  /* Flash型号正确 */
+  if (id == SPI_FLASH_ID)
+  {
+      /* Flash中的中文显示测试 */
+      E2213JS0C1_ClearFullScreen(WHITE);
+      E2213JS0C1_ShowCharStr(0,100,"Flash",FONT_1608,BLACK,WHITE);     
+      E2213JS0C1_FlashScreen();
+      /* Flash中的ASCII字符显示测试 */
+      
+      /* Flash中的bmp图片显示测试 */
+      
+      /* Flash中的三色图显示测试 */
+      
+      
+      
+  }
+  /* Flash型号不对 */
+  else
+  {
+      E2213JS0C1_ClearFullScreen(WHITE);
+      E2213JS0C1_ShowCharStr(0,80,"Incorrect ",FONT_1608,BLACK,WHITE);  
+      E2213JS0C1_ShowCharStr(0,100,"Flash",FONT_1608,BLACK,WHITE); 
+      E2213JS0C1_ShowCharStr(0,120,"model",FONT_1608,BLACK,WHITE);       
+      E2213JS0C1_FlashScreen();
+  }
+#endif
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -148,6 +178,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+
   /** Initializes the CPU, AHB and APB buses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
@@ -198,4 +229,3 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
-

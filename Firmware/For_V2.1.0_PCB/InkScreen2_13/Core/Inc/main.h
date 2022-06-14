@@ -80,6 +80,14 @@ void Error_Handler(void);
 #define DO_SCREEN_CLK_GPIO_Port GPIOA
 #define MO_SCREEN_MOSI_Pin LL_GPIO_PIN_7
 #define MO_SCREEN_MOSI_GPIO_Port GPIOA
+#define DO_FLASH_CS_Pin LL_GPIO_PIN_12
+#define DO_FLASH_CS_GPIO_Port GPIOB
+#define DO_FLASH_CLK_Pin LL_GPIO_PIN_13
+#define DO_FLASH_CLK_GPIO_Port GPIOB
+#define MO_FLASH_MISO_Pin LL_GPIO_PIN_14
+#define MO_FLASH_MISO_GPIO_Port GPIOB
+#define MO_FLASH_MOSI_Pin LL_GPIO_PIN_15
+#define MO_FLASH_MOSI_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

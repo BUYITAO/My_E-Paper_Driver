@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "image.h": "c",
+        "spiflash.h": "c"
+    }
+}
