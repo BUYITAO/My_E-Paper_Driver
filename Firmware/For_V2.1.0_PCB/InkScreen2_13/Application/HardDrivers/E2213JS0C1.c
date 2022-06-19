@@ -2,6 +2,9 @@
 #include "stdint.h"
 #include "stm32f1xx_ll_spi.h"
 #include "font.h"
+#if EXTERNAL_SPI_FLASH_CONFIG == ENABLE
+#include "spiFlash.h"
+#endif
 
 
 static void E2213JS0C1_SendReadByte(uint8_t byte);
@@ -616,4 +619,109 @@ void E2213JS0C1_DrawImage(uint8_t xStart, uint8_t yStart, uint8_t imageWidth,
     }                
 }
 
+#if EXTERNAL_SPI_FLASH_CONFIG == ENABLE
 
+/**
+ * @brief	从flash字库中获得GBK字库的字模数据
+ * @param	gbkH：GBK码高位。	
+ * @param	gbkL：GBK码低位。
+ * @param	fontData：存放从flash中读出字模数据的数组。
+ * @param	address：在Flasgh中的起始地址
+ * @param	size:一个字符占用的字节数。
+ * @retval	none
+ */
+static void E2213JS0C1_GetGbkFontData(uint8_t gbkH, uint8_t gbkL, uint8_t *fontData, uint32_t address, uint8_t size)
+{	
+	uint32_t foffset;
+	
+	/* 计算该字符在字库中的偏移量 */
+	if (gbkL < 0x7f)
+	{
+		gbkL -= 0x40;
+	}
+	else 
+	{
+		gbkL -= 0x41;
+	}
+	gbkH -= 0x81;   
+	foffset = (190 * gbkH + gbkL) * size;
+	address = address + foffset;
+			
+	/* 从flash中读取字模数据 */
+	SPI_FLASH_BufferRead(fontData, address, size);
+}
+
+/**
+ * @brief	从flash读取数据，显示GBK编码的字符 或 ASCII字符
+ * @param	startX：左上角起始点的x轴坐标。	    
+ * @param	startY：左上角起始点的y轴坐标。
+ * @param	fontColor:字体颜色。
+ * @param	backgroundColor：背景颜色。
+* @param	flashFont:flash中字库的选择
+ * @param	str：需要显示的字符串，必须以0x00结尾！
+ * @retval	下一个字符串左上角X轴的坐标
+ */
+uint16_t E2213JS0C1_ShowGBKFontOrAsciiFromFlash(uint16_t startX, uint16_t startY, 
+    enum ENUM_COLOR fontColor, enum ENUM_COLOR backgroundColor, enum ENUM_FLASH_FONT flashFont, uint8_t *str)
+{
+	uint8_t fontData[72];  
+	uint8_t strH, strL;
+    uint32_t addrStartGbk, addrStartAscii, offsetGbk, offsetAscii;
+    uint8_t widthGbk, heightGbk, widthAscii, heightAscii;
+    
+    /* 根据不同的字体加载其对应的参数 */
+    switch(flashFont)
+    {
+    case FONT_16:
+        addrStartGbk = ADDR_GBK_FONT_16_START;
+        offsetGbk = OFFSET_GBK_FONT_16;
+        widthGbk = WIDTH_GBK_FONT_16;
+        heightGbk = HEIGHT_GBK_FONT_16;
+        break;
+    }
+
+	/* 循环显示字符直到全部显示完 */
+	while (1)
+	{
+		/* 获取字符编码的高位 */
+		strH = *str;
+		
+		/* 判断是否结束 */
+		if (strH == 0x00)
+		{
+			break;
+		}
+		
+		/* 中文字符,GBK编码的第一个字节取值范围为0x81-0x7E，不在这个范围内就可以判定不是GBK中文 */
+		if ((0x81 <= strH) && (strH <= 0xFE))
+		{
+			/* 获取字符编码的低位 */
+			strL = *++str;
+			/* 从flash获得字模数据 */
+			E2213JS0C1_GetGbkFontData(strH, strL, fontData, addrStartGbk, offsetGbk);
+			/* 判断该字符显示后会不会超出屏幕显示范围 */
+			if (startX + widthGbk <= E2213JS0C1_XPOS_MAX)
+			{
+				/* 显示文字 */
+				E2213JS0C1_DrawBmp(startX, startY, widthGbk, heightGbk, fontColor, backgroundColor, fontData);
+				startX += widthGbk;
+			}
+		}
+//		/* ACSII字符 */
+//		else if ((strH <= '~') && (strH >= ' '))
+//		{
+//			/* 从flash读取ACSII字符的数据 */
+//			ST7789V_GetAcsiiFontData(strH, fontData, OFFSET_ACSII_16);
+//			/* 判断该字符显示后会不会超出屏幕显示范围 */
+//			if (startX + WIDTH_ACSII_16 <= ST7789V_SPILCD_W)
+//			{
+//				/* 显示 */
+//				ST7789V_DrawBmp(startX, startY, WIDTH_ACSII_16, HEIGHT_ACSII_16, fColor, bColor, fontData);
+//				startX += WIDTH_ACSII_16;
+//			}
+//		}
+		str++;
+	}
+	return startX;
+}
+#endif

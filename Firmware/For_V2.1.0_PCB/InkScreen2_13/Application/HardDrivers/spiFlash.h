@@ -11,10 +11,6 @@
 	LL_GPIO_ResetOutputPin(DO_FLASH_CS_GPIO_Port, DO_FLASH_CS_Pin)
 #define SPI_FLASH_CS_DISABLE() \
     LL_GPIO_SetOutputPin(DO_FLASH_CS_GPIO_Port, DO_FLASH_CS_Pin)
-/***************************** Flash中各资源的起始地址 *********************************/
-
-
-
 /***************************** Flash的一些参数 *********************************/
 /* W25QXX ID */
 //#define SPI_FLASH_ID_W25Q16             (0xEF4015)

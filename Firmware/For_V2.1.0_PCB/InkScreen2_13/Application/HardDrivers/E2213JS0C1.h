@@ -93,6 +93,20 @@ enum ENUM_COLOR
 #define FONT_1608		    (0)
 #define FONT_1608_WIDTH		(8)
 #define FONT_1608_HEIGHT	(16)
+
+#if EXTERNAL_SPI_FLASH_CONFIG == ENABLE
+/***************************** Flash中各资源的起始地址 *********************************/
+enum ENUM_FLASH_FONT
+{
+    FONT_16,
+};
+#define ADDR_GBK_FONT_16_START  (0x00000000)
+#define OFFSET_GBK_FONT_16      (32)
+#define WIDTH_GBK_FONT_16		(16)
+#define HEIGHT_GBK_FONT_16		(16)
+
+
+#endif
 /*指令*****************************************************************************/
 #define SOFT_RESET_CMD          0x00
 #define SOFT_RESET_DATA         0x0E
@@ -138,4 +152,10 @@ void E2213JS0C1_DrawBmp(uint8_t xStart, uint8_t yStart, uint8_t bmpWidth,
     const unsigned char* pic);
 void E2213JS0C1_DrawImage(uint8_t xStart, uint8_t yStart, uint8_t imageWidth, 
     uint8_t imageHeight, const unsigned char* pic);
+#if EXTERNAL_SPI_FLASH_CONFIG == ENABLE
+uint16_t E2213JS0C1_ShowGBKFontOrAsciiFromFlash(uint16_t startX, uint16_t startY, 
+    enum ENUM_COLOR fontColor, enum ENUM_COLOR backgroundColor, enum ENUM_FLASH_FONT flashFont, uint8_t *str);
+
+#endif
+
 #endif
