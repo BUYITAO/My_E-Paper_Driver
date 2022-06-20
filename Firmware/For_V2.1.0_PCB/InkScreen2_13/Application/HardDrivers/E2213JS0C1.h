@@ -104,7 +104,10 @@ enum ENUM_FLASH_FONT
 #define OFFSET_GBK_FONT_16      (32)
 #define WIDTH_GBK_FONT_16		(16)
 #define HEIGHT_GBK_FONT_16		(16)
-
+#define ADDR_ASCII_FONT_16_START  (0x000BB080)
+#define OFFSET_ASCII_FONT_16      (16)
+#define WIDTH_ASCII_FONT_16		  (8)
+#define HEIGHT_ASCII_FONT_16	  (16)
 
 #endif
 /*指令*****************************************************************************/

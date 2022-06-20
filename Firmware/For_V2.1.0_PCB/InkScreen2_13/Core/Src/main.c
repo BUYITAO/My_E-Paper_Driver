@@ -119,13 +119,13 @@ int main(void)
   /* Flash型号正确 */
   if (id == SPI_FLASH_ID)
   {
-      /* Flash中的中文显示测试 */
+      /* Flash中的中文、ASCII字符显示测试 */
       E2213JS0C1_ClearFullScreen(WHITE);      
       uint8_t chinese[5] = {0xB2, 0xE2, 0xCA, 0xD4, 0x00};
       E2213JS0C1_ShowGBKFontOrAsciiFromFlash(0, 100, BLACK, WHITE, FONT_16, chinese);  
-      E2213JS0C1_FlashScreen();
-      /* Flash中的ASCII字符显示测试 */
-      
+      uint8_t ascii[4] = {0x40, 0x41, 0x42, 0x00};
+      E2213JS0C1_ShowGBKFontOrAsciiFromFlash(0, 150, BLACK, WHITE, FONT_16, ascii);
+      E2213JS0C1_FlashScreen();    
       /* Flash中的bmp图片显示测试 */
       
       /* Flash中的三色图显示测试 */

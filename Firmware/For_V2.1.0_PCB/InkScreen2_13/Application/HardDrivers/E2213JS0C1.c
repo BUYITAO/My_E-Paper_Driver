@@ -652,6 +652,28 @@ static void E2213JS0C1_GetGbkFontData(uint8_t gbkH, uint8_t gbkL, uint8_t *fontD
 }
 
 /**
+ * @brief	从flash字库中获得ASCII字库的字模
+ * @param	asciiCode：ASCII编码
+ * @param	fontData：存放字模数据的数组。
+ * @param	address：在Flasgh中的起始地址
+ * @param	size:一个字符占用的字节数。
+ * @retval	none
+ */
+static void E2213JS0C1_GetAsciiFontData(uint8_t asciiCode, uint8_t *fontData, uint32_t address, uint8_t size)
+{	
+	uint32_t foffset;
+	uint8_t ch;
+	/* 计算偏移量 */
+	ch = asciiCode - ' ';
+	foffset = ch * size;	
+	address = address + foffset;	
+	
+	/* 从flash中读取字模数据 */
+	SPI_FLASH_BufferRead(fontData, address, size);
+}
+
+
+/**
  * @brief	从flash读取数据，显示GBK编码的字符 或 ASCII字符
  * @param	startX：左上角起始点的x轴坐标。	    
  * @param	startY：左上角起始点的y轴坐标。
@@ -677,6 +699,10 @@ uint16_t E2213JS0C1_ShowGBKFontOrAsciiFromFlash(uint16_t startX, uint16_t startY
         offsetGbk = OFFSET_GBK_FONT_16;
         widthGbk = WIDTH_GBK_FONT_16;
         heightGbk = HEIGHT_GBK_FONT_16;
+        addrStartAscii = ADDR_ASCII_FONT_16_START;
+        offsetAscii = OFFSET_ASCII_FONT_16;
+        widthAscii = WIDTH_ASCII_FONT_16;
+        heightAscii = HEIGHT_ASCII_FONT_16;
         break;
     }
 
@@ -707,19 +733,19 @@ uint16_t E2213JS0C1_ShowGBKFontOrAsciiFromFlash(uint16_t startX, uint16_t startY
 				startX += widthGbk;
 			}
 		}
-//		/* ACSII字符 */
-//		else if ((strH <= '~') && (strH >= ' '))
-//		{
-//			/* 从flash读取ACSII字符的数据 */
-//			ST7789V_GetAcsiiFontData(strH, fontData, OFFSET_ACSII_16);
-//			/* 判断该字符显示后会不会超出屏幕显示范围 */
-//			if (startX + WIDTH_ACSII_16 <= ST7789V_SPILCD_W)
-//			{
-//				/* 显示 */
-//				ST7789V_DrawBmp(startX, startY, WIDTH_ACSII_16, HEIGHT_ACSII_16, fColor, bColor, fontData);
-//				startX += WIDTH_ACSII_16;
-//			}
-//		}
+		/* ACSII字符 */
+		else if ((strH <= '~') && (strH >= ' '))
+		{
+			/* 从flash读取ACSII字符的数据 */
+			E2213JS0C1_GetAsciiFontData(strH, fontData, addrStartAscii, offsetAscii);
+			/* 判断该字符显示后会不会超出屏幕显示范围 */
+			if (startX + widthAscii <= E2213JS0C1_XPOS_MAX)
+			{
+				/* 显示 */
+				E2213JS0C1_DrawBmp(startX, startY, widthAscii, heightAscii, fontColor, backgroundColor, fontData);
+				startX += widthAscii;
+			}
+		}
 		str++;
 	}
 	return startX;
