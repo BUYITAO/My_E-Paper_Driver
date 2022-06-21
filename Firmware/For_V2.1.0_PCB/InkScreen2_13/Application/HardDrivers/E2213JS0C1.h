@@ -57,6 +57,9 @@ enum ENUM_FILL
 #define E2213JS0C1_BUFFER_SIZE (E2213JS0C1_W * E2213JS0C1_H / 8)
 #define E2213JS0C1_BUFFER_WIDTH_SIZE (E2213JS0C1_W / 8)
 #define E2213JS0C1_BUFFER_HEIGHT_SIZE (E2213JS0C1_H)
+#if EXTERNAL_SPI_FLASH_CONFIG == ENABLE
+#define E2213JS0C1_FLASH_READ_BUFFER_SIZE (E2213JS0C1_H * 2)
+#endif
 /*颜色*****************************************************************************/
 enum ENUM_COLOR 
 {
@@ -109,6 +112,14 @@ enum ENUM_FLASH_FONT
 #define WIDTH_ASCII_FONT_16		  (8)
 #define HEIGHT_ASCII_FONT_16	  (16)
 
+#define ADDR_BMP_START      (0x000BB670)
+#define WIDTH_BMP		    (104)
+#define HEIGHT_BMP		    (41)
+
+#define ADDR_IMAGE_START    (0x000BB885)
+#define WIDTH_IMAGE		    (104)
+#define HEIGHT_IMAGE		(212)
+
 #endif
 /*指令*****************************************************************************/
 #define SOFT_RESET_CMD          0x00
@@ -139,7 +150,7 @@ enum ENUM_FLASH_FONT
 /*函数*******************************************************************************/
 void E2213JS0C1_Init(uint8_t Orientation);
 void E2213JS0C1_ClearFullScreen(enum ENUM_COLOR color);
-void E2213JS0C1_FlashScreen(void);
+void E2213JS0C1_RefreshScreen(void);
 void E2213JS0C1_DrawPoint(uint8_t xPos, uint8_t yPos, enum ENUM_COLOR color);
 void E2213JS0C1_DrawLine(uint8_t xStart, uint8_t yStart, uint8_t length, 
     enum ENUM_ORIENTATION orientation, enum ENUM_COLOR color);
@@ -158,6 +169,10 @@ void E2213JS0C1_DrawImage(uint8_t xStart, uint8_t yStart, uint8_t imageWidth,
 #if EXTERNAL_SPI_FLASH_CONFIG == ENABLE
 uint16_t E2213JS0C1_ShowGBKFontOrAsciiFromFlash(uint16_t startX, uint16_t startY, 
     enum ENUM_COLOR fontColor, enum ENUM_COLOR backgroundColor, enum ENUM_FLASH_FONT flashFont, uint8_t *str);
+void E2213JS0C1_DrawImageFromFlash(uint8_t xStart, uint8_t yStart, uint8_t imageWidth, 
+    uint8_t imageHeight, uint32_t readAddr);
+void E2213JS0C1_DrawBmpFromFlash(uint8_t xStart, uint8_t yStart, uint8_t bmpWidth, 
+    uint8_t bmpHeight, enum ENUM_COLOR fontColor, enum ENUM_COLOR backgroundColor, uint32_t readAddr);
 
 #endif
 

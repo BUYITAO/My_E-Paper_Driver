@@ -18,6 +18,14 @@ static void E2213JS0C1_WaiteUntilNotBusy(void);
 uint8_t E2213JS0C1_FirstFrameBuffer[E2213JS0C1_BUFFER_SIZE];
 uint8_t E2213JS0C1_SecondFrameBuffer[E2213JS0C1_BUFFER_SIZE];
 
+#if EXTERNAL_SPI_FLASH_CONFIG == ENABLE
+/* 从flash中读取图片数据时的缓存空间，大小可根据自己情况修改 */
+/* 暂定大小为212 * 2，恰好是横屏情况下的一行图片数据大小 */
+uint8_t E2213JS0C1_FlashReadBuffer[E2213JS0C1_FLASH_READ_BUFFER_SIZE];
+
+#endif
+
+
 /**
  * @brief	SPI收/发数据
  * @param	byte：需要发送的数据
@@ -224,7 +232,7 @@ static void E2213JS0C1_TurnOffDCDC(void)
  * @param	none
  * @retval	none
  */
-void E2213JS0C1_FlashScreen(void)
+void E2213JS0C1_RefreshScreen(void)
 {
     E2213JS0C1_SendImageData();
     E2213JS0C1_SendUpdateCmd();
@@ -749,5 +757,78 @@ uint16_t E2213JS0C1_ShowGBKFontOrAsciiFromFlash(uint16_t startX, uint16_t startY
 		str++;
 	}
 	return startX;
+}
+
+/**
+ * @brief	从flash取数据画图片（设置图片时：C语言数组，水平扫描，16位真彩色，
+ * 			不选包含图像头数据，选高位在前）
+ * @param	startX：左上角X轴坐标
+ * @param	startY：左上角Y轴坐标
+ * @param	imageWidth：x轴像素点个数
+ * @param	imageHeight：y轴像素点个数
+ * @param	readAddr:该图片在flash中的起始地址
+ * @retval	none
+ */
+void E2213JS0C1_DrawImageFromFlash(uint8_t xStart, uint8_t yStart, uint8_t imageWidth, 
+    uint8_t imageHeight, uint32_t readAddr)
+{	
+    uint8_t xPos = xStart;
+    uint8_t yPos = yStart;
+    
+	/* 从flash读取一次数据的大小，暂定一行，可根据情况修改 */
+	uint16_t readBufferSize = imageWidth * 2;
+
+	/* 每次从flash读数据的起始地址 */
+	uint32_t startAddr = readAddr;
+
+	/* 循环读取图片数据并加载到显示buffer中 */
+    for(uint8_t i = 0; i < imageHeight; i++)
+    {
+        /* 从flash读取数据 */
+        SPI_FLASH_BufferRead(E2213JS0C1_FlashReadBuffer, startAddr, readBufferSize);
+        startAddr += readBufferSize;
+        
+        E2213JS0C1_DrawImage(xPos, yPos, imageWidth, 1, E2213JS0C1_FlashReadBuffer);			
+        yPos++;
+    }
+}
+
+/**
+ * @brief	从flash取数据画一张bmp图片
+ * @param	startX：左上角X轴坐标
+ * @param	startY：左上角Y轴坐标
+ * @param	bmpWidth：x轴像素点个数
+ * @param	bmpHeight：y轴像素点个数
+ * @param	fontColor:字体颜色。
+ * @param	backgroundColor：背景颜色。
+ * @param	readAddr:该图片在flash中的起始地址
+ * @retval	none
+ */
+void E2213JS0C1_DrawBmpFromFlash(uint8_t xStart, uint8_t yStart, uint8_t bmpWidth, 
+    uint8_t bmpHeight, enum ENUM_COLOR fontColor, enum ENUM_COLOR backgroundColor, uint32_t readAddr)
+{	
+    uint8_t xPos = xStart;
+    uint8_t yPos = yStart;
+    
+	/* 从flash读取一次数据的大小，暂定一行，可根据情况修改 */
+    uint16_t readBufferSize = bmpWidth / 8;
+    if ((bmpWidth % 8) != 0)
+    {
+        readBufferSize++;
+    }
+	
+	/* 每次从flash读数据的起始地址 */
+	uint32_t startAddr = readAddr;
+
+	/* 循环读取图片数据并加载到显示buffer中 */
+    for(uint8_t i = 0; i < bmpHeight; i++)
+    {
+        /* 从flash读取数据 */
+        SPI_FLASH_BufferRead(E2213JS0C1_FlashReadBuffer, startAddr, readBufferSize);
+        startAddr += readBufferSize;
+        
+        E2213JS0C1_DrawBmp(xPos, yPos, bmpWidth, 1, fontColor, backgroundColor, E2213JS0C1_FlashReadBuffer);			
+        yPos++;
+    }
 }
 #endif
