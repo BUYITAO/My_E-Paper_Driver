@@ -691,13 +691,17 @@ static void E2213JS0C1_GetAsciiFontData(uint8_t asciiCode, uint8_t *fontData, ui
  * @param	str：需要显示的字符串，必须以0x00结尾！
  * @retval	下一个字符串左上角X轴的坐标
  */
-uint16_t E2213JS0C1_ShowGBKFontOrAsciiFromFlash(uint16_t startX, uint16_t startY, 
+uint8_t E2213JS0C1_ShowGBKFontOrAsciiFromFlash(uint8_t startX, uint8_t startY, 
     enum ENUM_COLOR fontColor, enum ENUM_COLOR backgroundColor, enum ENUM_FLASH_FONT flashFont, uint8_t *str)
 {
 	uint8_t fontData[72];  
 	uint8_t strH, strL;
     uint32_t addrStartGbk, addrStartAscii, offsetGbk, offsetAscii;
     uint8_t widthGbk, heightGbk, widthAscii, heightAscii;
+    uint8_t xPos, yPos;
+    xPos = startX;
+    yPos = startY; 
+
     
     /* 根据不同的字体加载其对应的参数 */
     switch(flashFont)
@@ -734,11 +738,11 @@ uint16_t E2213JS0C1_ShowGBKFontOrAsciiFromFlash(uint16_t startX, uint16_t startY
 			/* 从flash获得字模数据 */
 			E2213JS0C1_GetGbkFontData(strH, strL, fontData, addrStartGbk, offsetGbk);
 			/* 判断该字符显示后会不会超出屏幕显示范围 */
-			if (startX + widthGbk <= E2213JS0C1_XPOS_MAX)
+			if (xPos + widthGbk <= E2213JS0C1_XPOS_MAX)
 			{
 				/* 显示文字 */
-				E2213JS0C1_DrawBmp(startX, startY, widthGbk, heightGbk, fontColor, backgroundColor, fontData);
-				startX += widthGbk;
+				E2213JS0C1_DrawBmp(xPos, yPos, widthGbk, heightGbk, fontColor, backgroundColor, fontData);
+				xPos += widthGbk;
 			}
 		}
 		/* ACSII字符 */
@@ -747,16 +751,16 @@ uint16_t E2213JS0C1_ShowGBKFontOrAsciiFromFlash(uint16_t startX, uint16_t startY
 			/* 从flash读取ACSII字符的数据 */
 			E2213JS0C1_GetAsciiFontData(strH, fontData, addrStartAscii, offsetAscii);
 			/* 判断该字符显示后会不会超出屏幕显示范围 */
-			if (startX + widthAscii <= E2213JS0C1_XPOS_MAX)
+			if (xPos + widthAscii <= E2213JS0C1_XPOS_MAX)
 			{
 				/* 显示 */
-				E2213JS0C1_DrawBmp(startX, startY, widthAscii, heightAscii, fontColor, backgroundColor, fontData);
-				startX += widthAscii;
+				E2213JS0C1_DrawBmp(xPos, yPos, widthAscii, heightAscii, fontColor, backgroundColor, fontData);
+				xPos += widthAscii;
 			}
 		}
 		str++;
 	}
-	return startX;
+	return xPos;
 }
 
 /**

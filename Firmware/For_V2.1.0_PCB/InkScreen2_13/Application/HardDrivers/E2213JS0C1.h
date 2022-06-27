@@ -172,7 +172,7 @@ void E2213JS0C1_DrawBmp(uint8_t xStart, uint8_t yStart, uint8_t bmpWidth,
 void E2213JS0C1_DrawImage(uint8_t xStart, uint8_t yStart, uint8_t imageWidth, 
     uint8_t imageHeight, const unsigned char* pic);
 #if EXTERNAL_SPI_FLASH_CONFIG == ENABLE
-uint16_t E2213JS0C1_ShowGBKFontOrAsciiFromFlash(uint16_t startX, uint16_t startY, 
+uint8_t E2213JS0C1_ShowGBKFontOrAsciiFromFlash(uint8_t startX, uint8_t startY, 
     enum ENUM_COLOR fontColor, enum ENUM_COLOR backgroundColor, enum ENUM_FLASH_FONT flashFont, uint8_t *str);
 void E2213JS0C1_DrawImageFromFlash(uint8_t xStart, uint8_t yStart, uint8_t imageWidth, 
     uint8_t imageHeight, uint32_t readAddr);
