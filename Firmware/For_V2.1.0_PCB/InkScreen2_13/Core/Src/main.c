@@ -27,6 +27,7 @@
 #include "spiFlash.h"
 #include "image.h"
 
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -93,24 +94,27 @@ int main(void)
   /* USER CODE BEGIN 2 */
   /* 初始化墨水屏 */
   E2213JS0C1_Init(0);
-//  /* 显示图片测试 */
-//  E2213JS0C1_DrawImage(0,0,104,212,gImage_1);  
-//  E2213JS0C1_FlashScreen();
-//  HAL_Delay(3000);
-//  /* 显示点、线、矩形、ASCII字符、bpm图片测试 */
-//  E2213JS0C1_ClearFullScreen(WHITE);
-//  E2213JS0C1_DrawPoint(0,0,RED);
-//  E2213JS0C1_DrawLine(0,2,10,HORIZONTAL,BLACK);
-//  E2213JS0C1_DrawLine(0,4,10,VERTICAL,BLACK);    
-//  E2213JS0C1_DrawRectangle(0,16,10,10,SOLID,BLACK,RED);   
-//  E2213JS0C1_DrawRectangle(20,16,10,10,HOLLOW,BLACK,RED);          
-//  E2213JS0C1_ShowCharStr(0,30,"FONT TEST",FONT_1608,BLACK,WHITE);
-//  E2213JS0C1_DrawBmp(0,50,104,41,BLACK,WHITE,BmpImage);
-//  E2213JS0C1_ShowCharStr(0,100,"UID:112222162",FONT_1608,BLACK,WHITE);  
-//  E2213JS0C1_ShowCharStr(20,116,"Designed",FONT_1608,BLACK,WHITE);
-//  E2213JS0C1_ShowCharStr(44,132,"By",FONT_1608,BLACK,WHITE);
-//  E2213JS0C1_ShowCharStr(40,148,"BYT",FONT_1608,BLACK,WHITE);
-//  E2213JS0C1_FlashScreen();  
+  /* 显示图片测试 */
+  E2213JS0C1_DrawImage(0, 0, 104, 212, gImage_1);  
+  E2213JS0C1_RefreshScreen();
+  HAL_Delay(3000);
+  /* 显示点、线、矩形、ASCII字符、bpm图片测试 */
+  E2213JS0C1_ClearFullScreen(WHITE);
+  E2213JS0C1_DrawPoint(0, 0, RED);
+  E2213JS0C1_DrawLine(0, 2, 10, HORIZONTAL, BLACK);
+  E2213JS0C1_DrawLine(0, 4, 10, VERTICAL, BLACK);    
+  E2213JS0C1_DrawRectangle(0, 16, 10, 10, SOLID, BLACK, RED);   
+  E2213JS0C1_DrawRectangle(20, 16, 10, 10, HOLLOW, BLACK, RED);          
+  E2213JS0C1_ShowCharStr(0, 30, BLACK, WHITE, FONT_1608, "FONT TEST");
+  E2213JS0C1_DrawBmp(0, 50, 104, 41, BLACK, WHITE, BmpImage);
+  E2213JS0C1_ShowCharStr(0, 100, BLACK, WHITE, FONT_1608, "UID:112222162");  
+  E2213JS0C1_ShowCharStr(20, 116, BLACK, WHITE, FONT_1608, "Designed");
+  E2213JS0C1_ShowCharStr(44, 132, BLACK, WHITE, FONT_1608, "By");
+  E2213JS0C1_ShowCharStr(40, 148, BLACK, WHITE, FONT_1608, "BYT");
+  /* 固件版本 */
+  E2213JS0C1_ShowCharStr(0, 195, BLACK, WHITE, FONT_1608, "FV:");
+  E2213JS0C1_ShowCharStr(25, 195, BLACK, WHITE, FONT_1608, FIRMWARE_VERSION);
+  E2213JS0C1_RefreshScreen();  
 #if EXTERNAL_SPI_FLASH_CONFIG == ENABLE
   /* 初始化Flash */
   SPI_FLASH_Init();
@@ -119,28 +123,40 @@ int main(void)
   /* Flash型号正确 */
   if (id == SPI_FLASH_ID)
   {
-      /* Flash中的中文、ASCII字符显示测试 */
-      E2213JS0C1_ClearFullScreen(WHITE);      
-      uint8_t chinese[5] = {0xB2, 0xE2, 0xCA, 0xD4, 0x00};
-      E2213JS0C1_ShowGBKFontOrAsciiFromFlash(0, 100, BLACK, WHITE, FONT_16, chinese);  
-      uint8_t ascii[4] = {0x40, 0x41, 0x42, 0x00};
-      E2213JS0C1_ShowGBKFontOrAsciiFromFlash(0, 150, BLACK, WHITE, FONT_16, ascii);
-      E2213JS0C1_FlashScreen();    
-      /* Flash中的bmp图片显示测试 */
+      /* 之前的画面停留3S */
+      HAL_Delay(3000);
       
       /* Flash中的三色图显示测试 */
+      E2213JS0C1_DrawImageFromFlash(0, 0, WIDTH_IMAGE, HEIGHT_IMAGE, ADDR_IMAGE_START);     
+      E2213JS0C1_RefreshScreen(); 
+      HAL_Delay(3000);     
+      
+      E2213JS0C1_ClearFullScreen(WHITE);    
+      /* Flash中的bmp图片显示测试 */
+      E2213JS0C1_DrawBmpFromFlash(0, 20, WIDTH_BMP, HEIGHT_BMP, RED, WHITE, ADDR_BMP_START);
+      /* Flash中的中文、ASCII字符显示测试 */       
+      uint8_t chinese[] = {0xB2, 0xBB, 0xB0, 0xAE, 0xBA, 0xFA, 0xC2, 0xDC, 0xB2, 0xB7, 0xB5, 0xC4, 0x00};
+      uint8_t chinese2[] ={0xB2, 0xD6, 0xCA, 0xF3, 0x00};
+      E2213JS0C1_ShowGBKFontOrAsciiFromFlash(5, 90, BLACK, WHITE, FONT_16, chinese);  
+      E2213JS0C1_ShowGBKFontOrAsciiFromFlash(37, 110, BLACK, WHITE, FONT_16, chinese2);  
+      uint8_t ascii[] = {0x55, 0x49, 0x44, 0x3A, 0x31, 0x31, 0x32, 0x32, 0x32, 0x32, 0x31, 0x36, 0x32, 0x00};
+      E2213JS0C1_ShowGBKFontOrAsciiFromFlash(5, 140, BLACK, WHITE, FONT_16, ascii);  
       
       
-      
+      /* 固件版本 */
+      uint8_t xPos = E2213JS0C1_ShowGBKFontOrAsciiFromFlash(0,195,BLACK,WHITE, FONT_16,"FV:");
+      E2213JS0C1_ShowGBKFontOrAsciiFromFlash(xPos,195,BLACK,WHITE, FONT_16,FIRMWARE_VERSION);
+       
+      E2213JS0C1_RefreshScreen();       
   }
   /* Flash型号不对 */
   else
   {
       E2213JS0C1_ClearFullScreen(WHITE);
-      E2213JS0C1_ShowCharStr(0,80,"Incorrect ",FONT_1608,BLACK,WHITE);  
-      E2213JS0C1_ShowCharStr(0,100,"Flash",FONT_1608,BLACK,WHITE); 
-      E2213JS0C1_ShowCharStr(0,120,"model",FONT_1608,BLACK,WHITE);       
-      E2213JS0C1_FlashScreen();
+      E2213JS0C1_ShowCharStr(0,80,BLACK,WHITE,FONT_1608,"Incorrect ");  
+      E2213JS0C1_ShowCharStr(0,100,BLACK,WHITE,FONT_1608,"Flash"); 
+      E2213JS0C1_ShowCharStr(0,120,BLACK,WHITE,FONT_1608,"model");       
+      E2213JS0C1_RefreshScreen();
   }
 #endif
   /* USER CODE END 2 */
