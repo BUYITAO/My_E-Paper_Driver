@@ -3,6 +3,11 @@
 
 #include "main.h"
 
+#define FIRMWARE_VERSION   ("2.0.0")
+
+#define DISABLE 0
+#define ENABLE  1
+
 /* 是否有外部SPI flash硬件存在 */
 #define EXTERNAL_SPI_FLASH_CONFIG       (ENABLE)
 
