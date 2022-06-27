@@ -424,14 +424,14 @@ void E2213JS0C1_DrawRectangle(uint8_t xStart, uint8_t yStart, uint8_t width,
  * @brief	显示一个字符
  * @param	xStart：X轴起点坐标
  * @param	yStart：Y轴起点坐标
- * @param	ch：需要显示的字符
- * @param	font：字库
  * @param	fontColor：文字颜色颜色（只能红黑白）
  * @param	backgroundColor：背景颜色（只能红黑白）
+ * @param	font：字库
+ * @param	ch：需要显示的字符
  * @retval	显示字符的宽（用于计算下一个字符的左上角X轴坐标）
  */
-uint8_t E2213JS0C1_ShowChar(uint8_t xStart, uint8_t yStart, char chr, 
-    uint8_t font, enum ENUM_COLOR fontColor, enum ENUM_COLOR backgroundColor)
+uint8_t E2213JS0C1_ShowChar(uint8_t xStart, uint8_t yStart, enum ENUM_COLOR fontColor, 
+        enum ENUM_COLOR backgroundColor, uint8_t font, char chr)
 {
     uint8_t xPos, yPos, temp, fontWidth, fontHeight;
     chr = chr - ' ';//得到偏移后的值
@@ -473,21 +473,21 @@ uint8_t E2213JS0C1_ShowChar(uint8_t xStart, uint8_t yStart, char chr,
  * @brief	显示字符串
  * @param	startX：左上角x轴坐标
  * @param	startY：左上角y轴坐标
- * @param	str:需要显示的字符串
- * @param	font：字库
  * @param	fontColor：文字颜色颜色（只能红黑白）
  * @param	backgroundColor：背景颜色（只能红黑白）
+ * @param	font：字库
+ * @param	str:需要显示的字符串
  * @retval	下一个字符串左上角X轴的坐标
  */
-uint8_t E2213JS0C1_ShowCharStr(uint8_t xStart, uint8_t yStart, char* str, 
-    uint8_t font, enum ENUM_COLOR fontColor, enum ENUM_COLOR backgroundColor)
+uint8_t E2213JS0C1_ShowCharStr(uint8_t xStart, uint8_t yStart, enum ENUM_COLOR fontColor, 
+       enum ENUM_COLOR backgroundColor, uint8_t font, char* str)
 {	
 	while(1)
 	{	
 		/* 判断是不是为非法字符，即ACSII中不在 ' ' 到 '~'的字符，这些字符是没有显示内容的*/
 		if ((*str <= '~') && (*str >= ' '))
 		{
-			xStart += E2213JS0C1_ShowChar(xStart, yStart, *str, font, fontColor, backgroundColor);
+			xStart += E2213JS0C1_ShowChar(xStart, yStart, fontColor, backgroundColor, font, *str);
 		}		
 		/* 判断是不是0x00的结束符号 */
 		else if (*str == 0x00)

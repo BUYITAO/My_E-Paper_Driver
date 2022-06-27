@@ -162,10 +162,10 @@ void E2213JS0C1_DrawLine(uint8_t xStart, uint8_t yStart, uint8_t length,
 void E2213JS0C1_DrawRectangle(uint8_t xStart, uint8_t yStart, uint8_t width, 
     uint8_t height, enum ENUM_FILL fill, enum ENUM_COLOR borderColor, 
     enum ENUM_COLOR fillColor);
-uint8_t E2213JS0C1_ShowChar(uint8_t xStart, uint8_t yStart, char chr, 
-    uint8_t font, enum ENUM_COLOR fontColor, enum ENUM_COLOR backgroundColor);
-uint8_t E2213JS0C1_ShowCharStr(uint8_t xStart, uint8_t yStart, char* str, 
-    uint8_t font, enum ENUM_COLOR fontColor, enum ENUM_COLOR backgroundColor);
+uint8_t E2213JS0C1_ShowChar(uint8_t xStart, uint8_t yStart, enum ENUM_COLOR fontColor, 
+        enum ENUM_COLOR backgroundColor, uint8_t font, char chr);
+uint8_t E2213JS0C1_ShowCharStr(uint8_t xStart, uint8_t yStart, enum ENUM_COLOR fontColor, 
+       enum ENUM_COLOR backgroundColor, uint8_t font, char* str);
 void E2213JS0C1_DrawBmp(uint8_t xStart, uint8_t yStart, uint8_t bmpWidth, 
     uint8_t bmpHeight, enum ENUM_COLOR fontColor, enum ENUM_COLOR backgroundColor, 
     const unsigned char* pic);
