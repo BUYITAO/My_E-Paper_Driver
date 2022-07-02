@@ -1,0 +1,8 @@
+目标文件:C:\Users\Administrator\Documents\My_E-Paper_Driver\Firmware\For_V2.1.0_PCB\ExternalFlashresources_Bin\CH_GBK+ASCII+BMP+IMAGE.bin   大小:0x000C64C5
+各部分大小如下:
+
+索引                        文件名                                            大小              偏移量            强制插入
+ 1      C:\Users\Administrator\Documents\My_E-Paper_Driver\Firmware\For_V2.1.0_PCB\ExternalFlashresources_Bin\CH_GBK_FONT_16.bin        0x000BB080        0x00000000             否
+ 2      C:\Users\Administrator\Documents\My_E-Paper_Driver\Firmware\For_V2.1.0_PCB\ExternalFlashresources_Bin\ASCII_FONT_16.bin        0x000005F0        0x000BB080             否
+ 3      C:\Users\Administrator\Documents\My_E-Paper_Driver\Firmware\For_V2.1.0_PCB\ExternalFlashresources_Bin\BMP.bin        0x00000215        0x000BB670             否
+ 4      C:\Users\Administrator\Documents\My_E-Paper_Driver\Firmware\For_V2.1.0_PCB\ExternalFlashresources_Bin\IMAGE.bin        0x0000AC40        0x000BB885             否
